@@ -1,0 +1,12 @@
+if TARGET_GR60MXD
+
+config SYS_BOARD
+    default "gr60mxd"
+
+config SYS_VENDOR
+    default "bcm"
+
+config SYS_CONFIG_NAME
+    default "gr60mxd"
+
+endif

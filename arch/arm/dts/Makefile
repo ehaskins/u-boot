@@ -596,6 +596,7 @@ dtb-y += \
 	imx6q-cm-fx6.dtb \
 	imx6q-dhcom-pdk2.dtb \
 	imx6q-display5.dtb \
+	imx6q-gr60mxd.dtb \
 	imx6q-icore.dtb \
 	imx6q-icore-mipi.dtb \
 	imx6q-icore-rqs.dtb \

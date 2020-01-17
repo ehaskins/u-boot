@@ -1,0 +1,1 @@
+obj-y  := gr60mxd.o
