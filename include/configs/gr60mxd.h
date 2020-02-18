@@ -3,8 +3,10 @@
 
 #include "mx6_common.h"
 
+#define CONFIG_MACH_TYPE	8894
+
 #define CONFIG_MXC_UART_BASE UART4_BASE
-#define CONFIG_MMCROOT "/dev/mmcblk0p2" /* SDHC4 */
+#define CONFIG_MMCROOT "/dev/mmcblk3p2"
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN (10 * SZ_1M)
