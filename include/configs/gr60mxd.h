@@ -6,7 +6,11 @@
 #define CONFIG_MACH_TYPE	8894
 
 #define CONFIG_MXC_UART_BASE UART4_BASE
-#define CONFIG_MMCROOT "/dev/mmcblk3p2"
+
+/* MMC Configs */
+#define CONFIG_SYS_FSL_ESDHC_ADDR      0
+#define CONFIG_SYS_FSL_USDHC_NUM       2
+// #define CONFIG_MMCROOT "/dev/mmcblk3p2"
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN (10 * SZ_1M)
@@ -25,6 +29,8 @@
 
 /* Environment organization */
 #define CONFIG_ENV_SIZE (8 * 1024)
+
+
 
 /*
 #define CONFIG_DEFAULT_FDT_FILE "imx6q-gr60mxd.dtb"
