@@ -50,7 +50,7 @@ iomux_v3_cfg_t const usdhc3_pads[] = {
 	MX6_PAD_SD3_DAT2__SD3_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT3__SD3_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 
-	/*CD pin*/
+/*CD pin*/
 #define USDHC3_CD_GPIO IMX_GPIO_NR(7, 0)
 	MX6_PAD_SD3_DAT5__GPIO7_IO00 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
@@ -105,12 +105,8 @@ static iomux_v3_cfg_t const rgb_pads[] = {
 iomux_v3_cfg_t const backlight_pads[] = {
 	MX6_PAD_SD1_CMD__GPIO1_IO18 | MUX_PAD_CTRL(ENET_PAD_CTRL),
 #define RGB_BACKLIGHT_GP IMX_GPIO_NR(1, 18)
-	// MX6_PAD_KEY_COL1__GPIO4_IO08 | MUX_PAD_CTRL(NO_PAD_CTRL),
-	// MX6_PAD_KEY_ROW1__GPIO4_IO09 | MUX_PAD_CTRL(NO_PAD_CTRL),
-	// #define BL0_PWEREN_GP IMX_GPIO_NR(4, 9)
 	MX6_PAD_KEY_COL2__GPIO4_IO10 | MUX_PAD_CTRL(NO_PAD_CTRL),
 #define BL0EN_GPO IMX_GPIO_NR(4, 10)
-	// MX6_PAD_GPIO_7__GPIO1_IO07 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
 static void enable_rgb(struct display_info_t const *dev)
@@ -121,17 +117,14 @@ static void enable_rgb(struct display_info_t const *dev)
 		ARRAY_SIZE(rgb_pads));
 
 	gpio_direction_output(RGB_BACKLIGHT_GP, 1);
-	// gpio_direction_output(IMX_GPIO_NR(4, 8), 1);
-	// gpio_direction_output(IMX_GPIO_NR(4, 9), 1);
 	gpio_direction_output(BL0EN_GPO, 1);
-	// gpio_direction_output(IMX_GPIO_NR(1, 7), 0);
 
 	gpio_direction_output(LCD_RST, 0);
 	udelay(500);
 	gpio_direction_output(LCD_RST, 1);
 }
 
-#define FB_SYNC_DATA_INVERT	0x20000000
+#define FB_SYNC_DATA_INVERT 0x20000000
 
 struct display_info_t const displays[] = {
 	{.bus = 0,
@@ -196,30 +189,31 @@ static void setup_display(void)
 									 ARRAY_SIZE(backlight_pads));
 
 	gpio_direction_output(RGB_BACKLIGHT_GP, 0);
-	//gpio_direction_output(BL0_PWEREN_GP, 0);
 }
 
 void splash_screen_prepare(void)
 {
 	char *env_loadsplash;
 
-	if (!env_get("splashimage") || !env_get("splashsize")) {
+	if (!env_get("splashimage") || !env_get("splashsize"))
+	{
 		return;
 	}
 
 	env_loadsplash = env_get("loadsplash");
-	if (env_loadsplash == NULL) {
+	if (env_loadsplash == NULL)
+	{
 		printf("Environment variable loadsplash not found!\n");
 		return;
 	}
 
-	if (run_command_list(env_loadsplash, -1, 0)) {
+	if (run_command_list(env_loadsplash, -1, 0))
+	{
 		printf("failed to run loadsplash %s\n\n", env_loadsplash);
 	}
 
 	return;
 }
-
 
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 	{USDHC3_BASE_ADDR},
