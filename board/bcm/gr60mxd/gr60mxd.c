@@ -51,6 +51,7 @@ iomux_v3_cfg_t const usdhc3_pads[] = {
 	MX6_PAD_SD3_DAT3__SD3_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 
 	/*CD pin*/
+#define USDHC3_CD_GPIO IMX_GPIO_NR(7, 0)
 	MX6_PAD_SD3_DAT5__GPIO7_IO00 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
@@ -198,7 +199,27 @@ static void setup_display(void)
 	//gpio_direction_output(BL0_PWEREN_GP, 0);
 }
 
-#define USDHC3_CD_GPIO IMX_GPIO_NR(7, 0)
+void splash_screen_prepare(void)
+{
+	char *env_loadsplash;
+
+	if (!env_get("splashimage") || !env_get("splashsize")) {
+		return;
+	}
+
+	env_loadsplash = env_get("loadsplash");
+	if (env_loadsplash == NULL) {
+		printf("Environment variable loadsplash not found!\n");
+		return;
+	}
+
+	if (run_command_list(env_loadsplash, -1, 0)) {
+		printf("failed to run loadsplash %s\n\n", env_loadsplash);
+	}
+
+	return;
+}
+
 
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 	{USDHC3_BASE_ADDR},
@@ -294,6 +315,7 @@ int board_early_init_f(void)
 {
 	setup_iomux_uart();
 
+	splash_screen_prepare();
 	return 0;
 }
 

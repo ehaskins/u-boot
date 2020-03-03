@@ -6,9 +6,9 @@
 #define CONFIG_MACH_TYPE	8894
 
 /* Framebuffer and LCD */
+#define CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SCREEN_ALIGN
 // #define CONFIG_VIDEO_BMP_RLE8
-// #define CONFIG_SPLASH_SCREEN
-// #define CONFIG_SPLASH_SCREEN_ALIGN
 // #define CONFIG_VIDEO_BMP_GZIP
 // #define CONFIG_SYS_VIDEO_LOGO_MAX_SIZE (6 * 1024 * 1024)
 // #define CONFIG_BMP_16BPP
@@ -41,8 +41,27 @@
 /* Environment organization */
 #define CONFIG_ENV_SIZE (8 * 1024)
 
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"console=ttymxc3\0" \
+	"fdt_high=0xffffffff\0" \
+	"initrd_high=0xffffffff\0" \
+	"fdt_addr_r=0x18000000\0" \
+	"fdt_file=imx6q-gr60mxd.dtb\0" \
+	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0"  \
+	"pxefile_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
+	"scriptaddr=" __stringify(CONFIG_LOADADDR) "\0" \
+	"ramdisk_addr_r=0x13000000\0" \
+	"ramdiskaddr=0x13000000\0" \
+    "mmcdev=2\0" \
+    "mmcpart=2\0" \
+    "splashimage=10000000\0" \
+    "splashpos=m,m\0" \
+	"loadsplash=fatload mmc ${mmcdev}:${mmcpart} ${splashimage} splash.bmp\0" \
 
-
+/* Miscellaneous configurable options */
+#define CONFIG_SYS_MEMTEST_START       0x10000000
+#define CONFIG_SYS_MEMTEST_END	       0x10010000
+#define CONFIG_SYS_MEMTEST_SCRATCH     0x10800000
 /*
 #define CONFIG_DEFAULT_FDT_FILE "imx6q-gr60mxd.dtb"
 #include "mx6sabre_common.h"
