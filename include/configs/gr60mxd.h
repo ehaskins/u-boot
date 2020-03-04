@@ -3,20 +3,12 @@
 
 #include "mx6_common.h"
 
-#define CONFIG_MACH_TYPE	8894
 
 /* Framebuffer and LCD */
 #define CONFIG_SPLASH_SCREEN
 #define CONFIG_SPLASH_SCREEN_ALIGN
-// #define CONFIG_VIDEO_BMP_RLE8
-// #define CONFIG_VIDEO_BMP_GZIP
-// #define CONFIG_SYS_VIDEO_LOGO_MAX_SIZE (6 * 1024 * 1024)
-// #define CONFIG_BMP_16BPP
 #define CONFIG_IMX_VIDEO_SKIP
-#define CONFIG_REVISION_TAG
 #define CONFIG_VIDEO_LOGO
-
-#define CONFIG_MXC_UART_BASE UART4_BASE
 
 /* MMC Configs */
 #define CONFIG_SYS_FSL_ESDHC_ADDR      0
@@ -49,8 +41,6 @@
 	"fdt_file=imx6q-gr60mxd.dtb\0" \
 	"kernel_file=zImage\0" \
 	"kernel_addr=" __stringify(CONFIG_LOADADDR) "\0"  \
-	"ramdisk_addr_r=0x13000000\0" \
-	"ramdiskaddr=0x13000000\0" \
     "mmcdev=2\0" \
     "mmcpart=2\0" \
 	"mmcroot=/dev/mmcblk3p2 rootwait rw\0" \
@@ -60,8 +50,8 @@
 	"loadsplash=fatload mmc ${mmcdev}:${mmcpart} ${splashimage} ${splashfile}\0" \
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${kernel_addr} ${kernel_file}\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-	"bootargs=console=${console},${baudrate} root=${mmcroot}\0" \
-	"bootcmd=run loadimage; run loadfdt; bootz ${kernel_addr} - ${fdt_addr}\0" \
+	"mmcargs=setenv bootargs console=${console},${baudrate} root=${mmcroot}\0" \
+	"bootcmd=run mmcargs loadimage loadfdt; bootz ${kernel_addr} - ${fdt_addr}\0" \
 
 
 /* Miscellaneous configurable options */
