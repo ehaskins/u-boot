@@ -20,7 +20,7 @@
 
 /* MMC Configs */
 #define CONFIG_SYS_FSL_ESDHC_ADDR      0
-#define CONFIG_SYS_FSL_USDHC_NUM       2
+
 // #define CONFIG_MMCROOT "/dev/mmcblk3p2"
 
 /* Size of malloc() pool */
