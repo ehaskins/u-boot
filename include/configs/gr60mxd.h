@@ -13,6 +13,13 @@
 /* MMC Configs */
 #define CONFIG_SYS_FSL_ESDHC_ADDR      0
 
+/* USB Configs */
+#define CONFIG_USBD_HS
+#define CONFIG_USB_MAX_CONTROLLER_COUNT 2
+#define CONFIG_EHCI_HCD_INIT_AFTER_RESET	/* For OTG port */
+#define CONFIG_MXC_USB_PORTSC	(PORT_PTS_UTMI | PORT_PTS_PTW)
+#define CONFIG_MXC_USB_FLAGS	0
+
 // #define CONFIG_MMCROOT "/dev/mmcblk3p2"
 
 /* Size of malloc() pool */
@@ -41,18 +48,32 @@
 	"fdt_file=imx6q-gr60mxd.dtb\0" \
 	"kernel_file=zImage\0" \
 	"kernel_addr=" __stringify(CONFIG_LOADADDR) "\0"  \
-    "mmcdev=2\0" \
-    "mmcpart=2\0" \
-	"mmcroot=/dev/mmcblk3p2 rootwait rw\0" \
 	"splashfile=splash.bmp\0" \
     "splashimage=10000000\0" \
     "splashpos=m,m\0" \
-	"loadsplash=fatload mmc ${mmcdev}:${mmcpart} ${splashimage} ${splashfile}\0" \
-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${kernel_addr} ${kernel_file}\0" \
-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
-	"mmcargs=setenv bootargs console=${console},${baudrate} root=${mmcroot}\0" \
-	"bootcmd=run mmcargs loadimage loadfdt; bootz ${kernel_addr} - ${fdt_addr}\0" \
-
+	"loadsplash=fatload ${boot_type} ${boot_dev}:${boot_part} ${splashimage} ${splashfile}\0" \
+	"loadimage=fatload ${boot_type} ${boot_dev}:${boot_part} ${kernel_addr} ${kernel_file}\0" \
+	"loadfdt=fatload ${boot_type} ${boot_dev}:${boot_part} ${fdt_addr} ${fdt_file}\0" \
+	"mmc_root=/dev/mmcblk3p2 rootwait rw\0" \
+	"boot_type=mmc\0" \
+	"boot_dev=2\0" \
+	"boot_part=2\0" \
+	"mmcvars=" \
+	"	setenv bootargs console=${console},${baudrate} root=${mmc_root};" \
+	"	setenv boot_type mmc;" \
+	"	setenv boot_dev 2;" \
+	"	setenv boot_part 2;" \
+	"\0" \
+	"usbvars=" \
+	"	setenv bootargs console=${console},${baudrate} root=${mmc_root};" \
+	"	setenv boot_type usb;" \
+	"	setenv boot_dev 0;" \
+	"	setenv boot_part 1;" \
+	"\0" \
+	"bootcmd=run boot_mmc\0" \
+	"boot_loaded=bootz ${kernel_addr} - ${fdt_addr}\0" \
+	"boot_mmc=run mmcvars loadimage loadfdt boot_loaded\0" \
+	"boot_usb=run usbvars loadimage loadfdt boot_loaded\0" \
 
 /* Miscellaneous configurable options */
 #define CONFIG_SYS_MEMTEST_START       0x10000000

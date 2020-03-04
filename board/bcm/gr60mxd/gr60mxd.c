@@ -71,12 +71,12 @@ static void enable_rgb(struct display_info_t const *dev)
 		rgb_pads,
 		ARRAY_SIZE(rgb_pads));
 
-	gpio_direction_output(RGB_BACKLIGHT_GP, 1);
-	gpio_direction_output(BL0EN_GPO, 1);
-
 	gpio_direction_output(LCD_RST, 0);
 	udelay(500);
 	gpio_direction_output(LCD_RST, 1);
+
+	gpio_direction_output(RGB_BACKLIGHT_GP, 1);
+	gpio_direction_output(BL0EN_GPO, 1);
 }
 
 #define FB_SYNC_DATA_INVERT 0x20000000
@@ -209,4 +209,8 @@ int misc_init_r(void)
 {
 	env_set_hex("reset_cause", get_imx_reset_cause());
 	return 0;
+}
+
+void board_preboot_os(void){
+	gpio_direction_output(RGB_BACKLIGHT_GP, 0);
 }
