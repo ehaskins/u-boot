@@ -45,18 +45,24 @@
 	"console=ttymxc3\0" \
 	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
-	"fdt_addr_r=0x18000000\0" \
+	"fdt_addr=0x18000000\0" \
 	"fdt_file=imx6q-gr60mxd.dtb\0" \
-	"kernel_addr_r=" __stringify(CONFIG_LOADADDR) "\0"  \
-	"pxefile_addr_r=" __stringify(CONFIG_LOADADDR) "\0" \
-	"scriptaddr=" __stringify(CONFIG_LOADADDR) "\0" \
+	"kernel_file=zImage\0" \
+	"kernel_addr=" __stringify(CONFIG_LOADADDR) "\0"  \
 	"ramdisk_addr_r=0x13000000\0" \
 	"ramdiskaddr=0x13000000\0" \
     "mmcdev=2\0" \
     "mmcpart=2\0" \
+	"mmcroot=/dev/mmcblk3p2 rootwait rw\0" \
+	"splashfile=splash.bmp\0" \
     "splashimage=10000000\0" \
     "splashpos=m,m\0" \
-	"loadsplash=fatload mmc ${mmcdev}:${mmcpart} ${splashimage} splash.bmp\0" \
+	"loadsplash=fatload mmc ${mmcdev}:${mmcpart} ${splashimage} ${splashfile}\0" \
+	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${kernel_addr} ${kernel_file}\0" \
+	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+	"bootargs=console=${console},${baudrate} root=${mmcroot}\0" \
+	"bootcmd=run loadimage; run loadfdt; bootz ${kernel_addr} - ${fdt_addr}\0" \
+
 
 /* Miscellaneous configurable options */
 #define CONFIG_SYS_MEMTEST_START       0x10000000
