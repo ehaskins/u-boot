@@ -189,7 +189,6 @@ int overwrite_console(void)
 
 int board_init(void)
 {
-	printf("board init");
 	gpio_request(RGB_BACKLIGHT_GP, "rgb backlight");
 	gpio_request(LCD_RST, "LCD_RST");
 	gpio_request(BL0EN_GPO, "BL0EN_GPO");
@@ -201,7 +200,7 @@ int board_init(void)
 
 int board_early_init_f(void)
 {
-
+	gpio_direction_output(RGB_BACKLIGHT_GP, 0);
 	return 0;
 }
 
