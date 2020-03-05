@@ -37,9 +37,6 @@
 #define CONFIG_SYS_INIT_SP_ADDR \
     (CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
-/* Environment organization */
-#define CONFIG_ENV_SIZE (8 * 1024)
-
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"emmc_dev=3\0" \
 	"sd_dev=2\0" \
