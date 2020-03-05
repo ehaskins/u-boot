@@ -41,18 +41,21 @@
 #define CONFIG_ENV_SIZE (8 * 1024)
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
+	"emmc_dev=3\0" \
+	"sd_dev=2\0" \
+	"kboot=bootz\0" \
 	"console=ttymxc3\0" \
 	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
 	"fdt_addr=0x18000000\0" \
 	"fdt_file=imx6q-gr60mxd.dtb\0" \
 	"kernel_file=zImage\0" \
-	"kernel_addr=" __stringify(CONFIG_LOADADDR) "\0"  \
+	"loadaddr=" __stringify(CONFIG_LOADADDR) "\0"  \
 	"splashfile=splash.bmp\0" \
     "splashimage=10000000\0" \
     "splashpos=m,m\0" \
 	"loadsplash=fatload ${boot_type} ${boot_dev}:${boot_part} ${splashimage} ${splashfile}\0" \
-	"loadimage=fatload ${boot_type} ${boot_dev}:${boot_part} ${kernel_addr} ${kernel_file}\0" \
+	"loadimage=fatload ${boot_type} ${boot_dev}:${boot_part} ${loadaddr} ${kernel_file}\0" \
 	"loadfdt=fatload ${boot_type} ${boot_dev}:${boot_part} ${fdt_addr} ${fdt_file}\0" \
 	"mmc_root=/dev/mmcblk3p2 rootwait rw\0" \
 	"boot_type=mmc\0" \
@@ -71,7 +74,7 @@
 	"	setenv boot_part 1;" \
 	"\0" \
 	"bootcmd=run boot_mmc\0" \
-	"boot_loaded=bootz ${kernel_addr} - ${fdt_addr}\0" \
+	"boot_loaded=bootz ${loadaddr} - ${fdt_addr}\0" \
 	"boot_mmc=run mmcvars loadimage loadfdt boot_loaded\0" \
 	"boot_usb=run usbvars loadimage loadfdt boot_loaded\0" \
 
