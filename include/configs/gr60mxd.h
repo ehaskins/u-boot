@@ -56,8 +56,8 @@
 	"loadfdt=fatload ${boot_type} ${boot_dev}:${boot_part} ${fdt_addr} ${fdt_file}\0" \
 	"mmc_root=/dev/mmcblk3p2 rootwait rw\0" \
 	"boot_type=mmc\0" \
-	"boot_dev=2\0" \
-	"boot_part=2\0" \
+	"boot_dev=${sd_dev}\0" \
+	"boot_part=1\0" \
 	"mmcvars=" \
 	"	setenv bootargs console=${console},${baudrate} root=${mmc_root};" \
 	"	setenv boot_type mmc;" \
