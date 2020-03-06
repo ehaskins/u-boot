@@ -7,6 +7,7 @@
 #include <asm/mach-imx/iomux-v3.h>
 #include <asm/mach-imx/boot_mode.h>
 #include <asm/mach-imx/video.h>
+#include <asm/arch-mx6/imx-regs.h>
 #include <asm/gpio.h>
 #include <mmc.h>
 #include <fsl_esdhc_imx.h>
@@ -22,7 +23,16 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define RGB_PAD_CTRL 0x10
 
-#define LCD_RST IMX_GPIO_NR(2, 0)
+iomux_v3_cfg_t const backlight_pads[] = {
+	MX6_PAD_SD1_CMD__GPIO1_IO18 | MUX_PAD_CTRL(ENET_PAD_CTRL),
+#define RGB_BACKLIGHT_GP IMX_GPIO_NR(1, 18)
+	MX6_PAD_KEY_COL2__GPIO4_IO10 | MUX_PAD_CTRL(NO_PAD_CTRL),
+#define BL0EN_GPO IMX_GPIO_NR(4, 10)
+};
+
+#if defined(CONFIG_VIDEO_IPUV3)
+
+
 
 static iomux_v3_cfg_t const rgb_pads[] = {
 	MX6_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK | MUX_PAD_CTRL(RGB_PAD_CTRL),
@@ -56,14 +66,10 @@ static iomux_v3_cfg_t const rgb_pads[] = {
 
 	/* LCD_RST */
 	MX6_PAD_NANDF_D0__GPIO2_IO00 | MUX_PAD_CTRL(NO_PAD_CTRL),
+#define LCD_RST IMX_GPIO_NR(2, 0)
 };
 
-iomux_v3_cfg_t const backlight_pads[] = {
-	MX6_PAD_SD1_CMD__GPIO1_IO18 | MUX_PAD_CTRL(ENET_PAD_CTRL),
-#define RGB_BACKLIGHT_GP IMX_GPIO_NR(1, 18)
-	MX6_PAD_KEY_COL2__GPIO4_IO10 | MUX_PAD_CTRL(NO_PAD_CTRL),
-#define BL0EN_GPO IMX_GPIO_NR(4, 10)
-};
+
 
 static void enable_rgb(struct display_info_t const *dev)
 {
@@ -142,7 +148,7 @@ static void setup_display(void)
 	/* backlights off until needed */
 	imx_iomux_v3_setup_multiple_pads(backlight_pads,
 									 ARRAY_SIZE(backlight_pads));
-
+	gpio_request(LCD_RST, "LCD_RST");
 	gpio_direction_output(RGB_BACKLIGHT_GP, 0);
 }
 
@@ -172,6 +178,8 @@ void splash_screen_prepare(void)
 	return;
 }
 
+#endif 
+
 int dram_init(void)
 {
 	gd->ram_size = imx_ddr_size();
@@ -190,11 +198,16 @@ int overwrite_console(void)
 int board_init(void)
 {
 	gpio_request(RGB_BACKLIGHT_GP, "rgb backlight");
-	gpio_request(LCD_RST, "LCD_RST");
 	gpio_request(BL0EN_GPO, "BL0EN_GPO");
 
-	setup_display();
+	// printf("0x020E0348 %x\n", readl(0x020E0348));
+	// printf("0x020E0730 %x\n", readl(0x020E0730));
+	// printf("GPIO1_BASE_ADDR %x %x\n", GPIO1_BASE_ADDR, readl(GPIO1_BASE_ADDR));
+	// printf("GPIO1_BASE_ADDR + 1 %x %x\n", GPIO1_BASE_ADDR + 1, readl(GPIO1_BASE_ADDR + 1));
 
+#if defined(CONFIG_VIDEO_IPUV3)
+	setup_display();
+#endif
 	return 0;
 }
 
