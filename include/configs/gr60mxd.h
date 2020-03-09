@@ -58,13 +58,13 @@
 	"boot_dev=2\0" \
 	"boot_part=1\0" \
 	"mmcvars=" \
-	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk3p2 rootwait rw" \
+	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk1p2 rootwait rw vt.global_cursor_default=0" \
 	"	setenv boot_type mmc;" \
 	"	setenv boot_dev ${sd_dev};" \
 	"	setenv boot_part 1;" \
 	"\0" \
 	"usbvars=" \
-	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk3p2 rootwait rw" \
+	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk1p2 rootwait rw vt.global_cursor_default=0" \
 	"	setenv boot_type usb;" \
 	"	setenv boot_dev 0;" \
 	"	setenv boot_part 1;" \
