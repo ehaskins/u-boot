@@ -26,8 +26,6 @@ DECLARE_GLOBAL_DATA_PTR;
 iomux_v3_cfg_t const backlight_pads[] = {
 	MX6_PAD_SD1_CMD__GPIO1_IO18 | MUX_PAD_CTRL(ENET_PAD_CTRL),
 #define RGB_BACKLIGHT_GP IMX_GPIO_NR(1, 18)
-	MX6_PAD_KEY_COL2__GPIO4_IO10 | MUX_PAD_CTRL(NO_PAD_CTRL),
-#define BL0EN_GPO IMX_GPIO_NR(4, 10)
 };
 
 #if defined(CONFIG_VIDEO_IPUV3)
@@ -81,8 +79,8 @@ static void enable_rgb(struct display_info_t const *dev)
 	udelay(500);
 	gpio_direction_output(LCD_RST, 1);
 
+	mdelay(50);
 	gpio_direction_output(RGB_BACKLIGHT_GP, 1);
-	gpio_direction_output(BL0EN_GPO, 1);
 }
 
 #define FB_SYNC_DATA_INVERT 0x20000000
@@ -198,13 +196,7 @@ int overwrite_console(void)
 int board_init(void)
 {
 	gpio_request(RGB_BACKLIGHT_GP, "rgb backlight");
-	gpio_request(BL0EN_GPO, "BL0EN_GPO");
-
-	// printf("0x020E0348 %x\n", readl(0x020E0348));
-	// printf("0x020E0730 %x\n", readl(0x020E0730));
-	// printf("GPIO1_BASE_ADDR %x %x\n", GPIO1_BASE_ADDR, readl(GPIO1_BASE_ADDR));
-	// printf("GPIO1_BASE_ADDR + 1 %x %x\n", GPIO1_BASE_ADDR + 1, readl(GPIO1_BASE_ADDR + 1));
-
+	
 #if defined(CONFIG_VIDEO_IPUV3)
 	setup_display();
 #endif
@@ -213,6 +205,7 @@ int board_init(void)
 
 int board_early_init_f(void)
 {
+	// Turn off backlight at the earliest possible time to hide the ugly...
 	gpio_direction_output(RGB_BACKLIGHT_GP, 0);
 	return 0;
 }
