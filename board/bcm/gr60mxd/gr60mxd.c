@@ -210,8 +210,16 @@ int board_early_init_f(void)
 	return 0;
 }
 
+#define SRC_SBMR2 (SRC_BASE_ADDR + 0x4)
+
 int misc_init_r(void)
 {
+	// int soc_sbmr = readl(SRC_SBMR2);
+
+	// printf("soc_sbmr %i \n", soc_sbmr);
+	// printf("  bootsel %i\n", (soc_sbmr >> 6) & 3);
+	// printf("  boot_cfg %i\n", (soc_sbmr >> 11) & 3);
+
 	env_set_hex("reset_cause", get_imx_reset_cause());
 	return 0;
 }

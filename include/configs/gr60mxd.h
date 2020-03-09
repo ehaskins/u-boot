@@ -54,18 +54,17 @@
 	"loadsplash=fatload ${boot_type} ${boot_dev}:${boot_part} ${splashimage} ${splashfile}\0" \
 	"loadimage=fatload ${boot_type} ${boot_dev}:${boot_part} ${loadaddr} ${kernel_file}\0" \
 	"loadfdt=fatload ${boot_type} ${boot_dev}:${boot_part} ${fdt_addr} ${fdt_file}\0" \
-	"mmc_root=/dev/mmcblk3p2 rootwait rw\0" \
 	"boot_type=mmc\0" \
-	"boot_dev=${sd_dev}\0" \
+	"boot_dev=2\0" \
 	"boot_part=1\0" \
 	"mmcvars=" \
-	"	setenv bootargs console=${console},${baudrate} root=${mmc_root};" \
+	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk3p2 rootwait rw" \
 	"	setenv boot_type mmc;" \
-	"	setenv boot_dev 2;" \
-	"	setenv boot_part 2;" \
+	"	setenv boot_dev ${sd_dev};" \
+	"	setenv boot_part 1;" \
 	"\0" \
 	"usbvars=" \
-	"	setenv bootargs console=${console},${baudrate} root=${mmc_root};" \
+	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk3p2 rootwait rw" \
 	"	setenv boot_type usb;" \
 	"	setenv boot_dev 0;" \
 	"	setenv boot_part 1;" \
