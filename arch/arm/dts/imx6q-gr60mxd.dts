@@ -27,7 +27,7 @@
 
 	backlight: pwm-backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pwm4 0 5000000>;
+		pwms = <&pwm4 0 100000>;
 		/* 
 			step = (8 - 5) / 7 = ~0.43
 			2 ^ (5 + (i * step))
