@@ -38,8 +38,6 @@
     (CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"emmc_dev=3\0" \
-	"sd_dev=2\0" \
 	"kboot=bootz\0" \
 	"console=ttymxc3\0" \
 	"fdt_high=0xffffffff\0" \
@@ -58,13 +56,19 @@
 	"boot_dev=2\0" \
 	"boot_part=1\0" \
 	"mmcvars=" \
-	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk1p2 rootwait rw vt.global_cursor_default=0" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0" \
 	"	setenv boot_type mmc;" \
-	"	setenv boot_dev ${sd_dev};" \
+	"	setenv boot_dev 3;" \
+	"	setenv boot_part 1;" \
+	"\0" \
+	"sdvars=" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk1 vt.global_cursor_default=0" \
+	"	setenv boot_type mmc;" \
+	"	setenv boot_dev 2;" \
 	"	setenv boot_part 1;" \
 	"\0" \
 	"usbvars=" \
-	"	setenv bootargs console=${console},${baudrate} root=/dev/mmcblk1p2 rootwait rw vt.global_cursor_default=0" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0" \
 	"	setenv boot_type usb;" \
 	"	setenv boot_dev 0;" \
 	"	setenv boot_part 1;" \
@@ -72,6 +76,7 @@
 	"bootcmd=run boot_mmc\0" \
 	"boot_loaded=bootz ${loadaddr} - ${fdt_addr}\0" \
 	"boot_mmc=run mmcvars loadimage loadfdt boot_loaded\0" \
+	"boot_sd=run sdvars loadimage loadfdt boot_loaded\0" \
 	"boot_usb=run usbvars loadimage loadfdt boot_loaded\0" \
 
 /* Miscellaneous configurable options */
