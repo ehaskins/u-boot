@@ -11,6 +11,9 @@
 #include <asm/gpio.h>
 #include <mmc.h>
 #include <fsl_esdhc_imx.h>
+#include <micrel.h>
+#include <miiphy.h>
+#include <netdev.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -177,6 +180,100 @@ void splash_screen_prepare(void)
 }
 
 #endif 
+
+static iomux_v3_cfg_t const enet_pads[] = {
+	MX6_PAD_KEY_COL1__ENET_MDIO		| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_KEY_COL2__ENET_MDC		| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_TXC__RGMII_TXC	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_TD0__RGMII_TD0	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_TD1__RGMII_TD1	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_TD2__RGMII_TD2	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_TD3__RGMII_TD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_TX_CTL__RGMII_TX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_ENET_REF_CLK__ENET_TX_CLK	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_RXC__RGMII_RXC	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_RD0__RGMII_RD0	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_RD1__RGMII_RD1	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_RD2__RGMII_RD2	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_RD3__RGMII_RD3	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL	| MUX_PAD_CTRL(ENET_PAD_CTRL),
+	MX6_PAD_GPIO_16__ENET_REF_CLK		| MUX_PAD_CTRL(ENET_PAD_CTRL),
+
+	/* GE_nRST */
+	MX6_PAD_ENET_RXD0__GPIO1_IO27	| MUX_PAD_CTRL(NO_PAD_CTRL),
+#define ENET_RESET IMX_GPIO_NR(1, 27)
+
+};
+
+static void setup_iomux_enet(void)
+{
+	imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
+
+	gpio_direction_output(ENET_RESET, 0);
+	udelay(500);
+	gpio_set_value(ENET_RESET, 1);
+}
+
+int mx6_rgmii_rework(struct phy_device *phydev)
+{
+	/* enable master mode, force phy to 100Mbps */
+	phy_write(phydev, MDIO_DEVAD_NONE, 0x9, 0x1c00);
+
+	/* RX Data Pad Skew Register */
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x0002);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x0005);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0xc002);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x7777);
+
+	/* TX Data Pad Skew Register */
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x0002);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x0006);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0xc002);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x7777);
+
+	/* Clock Pad Skew Register */
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x0002);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x0008);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0xc002);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x7fff);
+
+	return 0;
+}
+
+int board_phy_config(struct phy_device *phydev)
+{
+	mx6_rgmii_rework(phydev);
+
+	if (phydev->drv->config)
+		phydev->drv->config(phydev);
+
+	return 0;
+}
+
+static int setup_fec(void)
+{
+	int ret;
+
+#ifdef CONFIG_MX6QP
+	imx_iomux_set_gpr_register(5, 9, 1, 1);
+#else
+	imx_iomux_set_gpr_register(1, 21, 1, 1);
+#endif
+
+	ret = enable_fec_anatop_clock(0, ENET_125MHZ);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
+int board_eth_init(bd_t *bis)
+{
+	setup_iomux_enet();
+	setup_fec();
+
+	return cpu_eth_init(bis);
+}
 
 int dram_init(void)
 {
