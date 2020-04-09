@@ -62,7 +62,7 @@
 	"	setenv boot_part 1;" \
 	"\0" \
 	"sdvars=" \
-	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk1 vt.global_cursor_default=0 ;" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 ;" \
 	"	setenv boot_type mmc;" \
 	"	setenv boot_dev 2;" \
 	"	setenv boot_part 1;" \
