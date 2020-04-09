@@ -49,7 +49,7 @@
 	"splashfile=mackerel/splash.bmp\0" \
     "splashimage=10000000\0" \
     "splashpos=m,m\0" \
-	"loadsplash=fatload ${boot_type} ${boot_dev}:${boot_part} ${splashimage} ${splashfile}\0" \
+	"loadsplash=fatload mmc 3:1 ${splashimage} ${splashfile}\0" \
 	"loadimage=fatload ${boot_type} ${boot_dev}:${boot_part} ${loadaddr} ${kernel_file}\0" \
 	"loadfdt=fatload ${boot_type} ${boot_dev}:${boot_part} ${fdt_addr} ${fdt_file}\0" \
 	"boot_type=mmc\0" \
