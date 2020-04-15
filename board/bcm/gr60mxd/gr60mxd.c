@@ -14,6 +14,7 @@
 #include <micrel.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include <linux/mdio.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -214,35 +215,31 @@ static void setup_iomux_enet(void)
 	gpio_set_value(ENET_RESET, 1);
 }
 
-int mx6_rgmii_rework(struct phy_device *phydev)
+int board_phy_config(struct phy_device *phydev)
 {
 	/* enable master mode, force phy to 100Mbps */
 	phy_write(phydev, MDIO_DEVAD_NONE, 0x9, 0x1c00);
 
-	/* RX Data Pad Skew Register */
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x0002);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x0005);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0xc002);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x7777);
+	ksz9031_phy_extended_write(
+		phydev, 
+		MDIO_DEVAD_NONE, 
+		MII_KSZ9031_EXT_RGMII_RX_DATA_SKEW, 
+		MII_KSZ9031_MOD_DATA_NO_POST_INC,
+		0x7777);
 
-	/* TX Data Pad Skew Register */
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x0002);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x0006);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0xc002);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x7777);
+	ksz9031_phy_extended_write(
+		phydev, 
+		MDIO_DEVAD_NONE, 
+		MII_KSZ9031_EXT_RGMII_TX_DATA_SKEW, 
+		MII_KSZ9031_MOD_DATA_NO_POST_INC,
+		0x7777);
 
-	/* Clock Pad Skew Register */
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0x0002);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x0008);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xd, 0xc002);
-	phy_write(phydev, MDIO_DEVAD_NONE, 0xe, 0x7fff);
-
-	return 0;
-}
-
-int board_phy_config(struct phy_device *phydev)
-{
-	mx6_rgmii_rework(phydev);
+	ksz9031_phy_extended_write(
+		phydev, 
+		MDIO_DEVAD_NONE, 
+		MII_KSZ9031_EXT_RGMII_CLOCK_SKEW, 
+		MII_KSZ9031_MOD_DATA_NO_POST_INC,
+		0x7fff);
 
 	if (phydev->drv->config)
 		phydev->drv->config(phydev);
@@ -250,29 +247,42 @@ int board_phy_config(struct phy_device *phydev)
 	return 0;
 }
 
-static int setup_fec(void)
-{
-	int ret;
-
-#ifdef CONFIG_MX6QP
-	imx_iomux_set_gpr_register(5, 9, 1, 1);
-#else
-	imx_iomux_set_gpr_register(1, 21, 1, 1);
-#endif
-
-	ret = enable_fec_anatop_clock(0, ENET_125MHZ);
-	if (ret)
-		return ret;
-
-	return 0;
-}
-
 int board_eth_init(bd_t *bis)
 {
-	setup_iomux_enet();
-	setup_fec();
+	uint32_t base = IMX_FEC_BASE;
+	struct mii_dev *bus = NULL;
+	struct phy_device *phydev = NULL;
+	int ret;
 
+	setup_iomux_enet();
+	 //imx_iomux_set_gpr_register(1, 21, 1, 1);
+
+#ifdef CONFIG_FEC_MXC
+	bus = fec_get_miibus(base, -1);
+	if (!bus)
+		return -EINVAL;
+	/* scan phy 4,5,6,7 */
+	phydev = phy_find_by_mask(bus, (0xf << 4), PHY_INTERFACE_MODE_RGMII);
+	if (!phydev) {
+		ret = -EINVAL;
+		goto free_bus;
+	}
+	printf("using phy at %d\n", phydev->addr);
+	ret  = fec_probe(bis, -1, base, bus, phydev);
+	if (ret)
+		goto free_phydev;
+#endif
+
+	// ret = enable_fec_anatop_clock(0, ENET_125MHZ);
+	if (ret)
+		return ret;
 	return cpu_eth_init(bis);
+
+free_phydev:
+	free(phydev);
+free_bus:
+	free(bus);
+	return ret;
 }
 
 int dram_init(void)
