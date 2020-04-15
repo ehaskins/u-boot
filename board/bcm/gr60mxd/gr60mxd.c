@@ -249,40 +249,9 @@ int board_phy_config(struct phy_device *phydev)
 
 int board_eth_init(bd_t *bis)
 {
-	uint32_t base = IMX_FEC_BASE;
-	struct mii_dev *bus = NULL;
-	struct phy_device *phydev = NULL;
-	int ret;
-
 	setup_iomux_enet();
-	 //imx_iomux_set_gpr_register(1, 21, 1, 1);
 
-#ifdef CONFIG_FEC_MXC
-	bus = fec_get_miibus(base, -1);
-	if (!bus)
-		return -EINVAL;
-	/* scan phy 4,5,6,7 */
-	phydev = phy_find_by_mask(bus, (0xf << 4), PHY_INTERFACE_MODE_RGMII);
-	if (!phydev) {
-		ret = -EINVAL;
-		goto free_bus;
-	}
-	printf("using phy at %d\n", phydev->addr);
-	ret  = fec_probe(bis, -1, base, bus, phydev);
-	if (ret)
-		goto free_phydev;
-#endif
-
-	// ret = enable_fec_anatop_clock(0, ENET_125MHZ);
-	if (ret)
-		return ret;
 	return cpu_eth_init(bis);
-
-free_phydev:
-	free(phydev);
-free_bus:
-	free(bus);
-	return ret;
 }
 
 int dram_init(void)
