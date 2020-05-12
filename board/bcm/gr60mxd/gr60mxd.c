@@ -32,6 +32,13 @@ iomux_v3_cfg_t const backlight_pads[] = {
 #define RGB_BACKLIGHT_GP IMX_GPIO_NR(1, 18)
 };
 
+iomux_v3_cfg_t const power_pads[] = {
+	MX6_PAD_GPIO_19__GPIO4_IO05 | MUX_PAD_CTRL(NO_PAD_CTRL),
+#define BT_POWER_GP IMX_GPIO_NR(4, 5)
+	MX6_PAD_NANDF_CS3__GPIO6_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL),
+#define WIFI_POWER_GP IMX_GPIO_NR(6, 16)
+};
+
 #if defined(CONFIG_VIDEO_IPUV3)
 
 
@@ -272,7 +279,17 @@ int overwrite_console(void)
 int board_init(void)
 {
 	gpio_request(RGB_BACKLIGHT_GP, "rgb backlight");
+	gpio_request(BT_POWER_GP, "BT_POWER_GP");
+	gpio_request(WIFI_POWER_GP, "WIFI_POWER_GP");
+
+	imx_iomux_v3_setup_multiple_pads(
+		power_pads,
+		ARRAY_SIZE(power_pads));
 	
+	// Turn on wifi and bt power
+	gpio_direction_output(BT_POWER_GP, 0);
+	gpio_direction_output(WIFI_POWER_GP, 0);
+
 #if defined(CONFIG_VIDEO_IPUV3)
 	setup_display();
 #endif
@@ -282,7 +299,12 @@ int board_init(void)
 int board_early_init_f(void)
 {
 	// Turn off backlight at the earliest possible time to hide the ugly...
+	imx_iomux_v3_setup_multiple_pads(
+		backlight_pads,
+		ARRAY_SIZE(backlight_pads));
+
 	gpio_direction_output(RGB_BACKLIGHT_GP, 0);
+
 	return 0;
 }
 
