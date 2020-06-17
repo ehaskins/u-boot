@@ -60,19 +60,19 @@
 	"boot_part=1\0" \
 	"extra_boot_args=\0" \
 	"mmcvars=" \
-	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 ${extra_boot_args} ;" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 cma=256M@2g ${extra_boot_args} ;" \
 	"	setenv boot_type mmc;" \
 	"	setenv boot_dev 3;" \
 	"	setenv boot_part 1;" \
 	"\0" \
 	"sdvars=" \
-	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 ${extra_boot_args} ;" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 cma=256M@2g ${extra_boot_args} ;" \
 	"	setenv boot_type mmc;" \
 	"	setenv boot_dev 2;" \
 	"	setenv boot_part 1;" \
 	"\0" \
 	"usbvars=" \
-	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 ${extra_boot_args} ;" \
+	"	setenv bootargs console=${console},${baudrate} boot_dev=mmcblk2 vt.global_cursor_default=0 cma=256M@2g ${extra_boot_args} ;" \
 	"	setenv boot_type usb;" \
 	"	setenv boot_dev 0;" \
 	"	setenv boot_part 1;" \
