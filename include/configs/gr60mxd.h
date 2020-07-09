@@ -46,10 +46,10 @@
 	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
 	"fdt_addr=0x18000000\0" \
-	"fdt_file=mackerel/imx6q-gr60mxd.dtb\0" \
-	"kernel_file=mackerel/zImage\0" \
+	"fdt_file=imx6q-gr60mxd.dtb\0" \
+	"kernel_file=zImage-gr60mxd\0" \
 	"loadaddr=" __stringify(CONFIG_LOADADDR) "\0"  \
-	"splashfile=mackerel/splash.bmp\0" \
+	"splashfile=splash.bmp\0" \
     "splashimage=10000000\0" \
     "splashpos=m,m\0" \
 	"loadsplash=fatload mmc 3:1 ${splashimage} ${splashfile}\0" \
